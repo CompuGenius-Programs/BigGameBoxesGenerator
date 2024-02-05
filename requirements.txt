@@ -1,0 +1,6 @@
+ttkthemes
+pillow
+pywin32
+roman
+img2pdf
+reportlab
