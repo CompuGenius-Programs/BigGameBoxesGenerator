@@ -30,8 +30,8 @@ def assign_boxes(people):
 def get_date_and_number():
     now = datetime.datetime.now()
     current_date = get_date(now.year, 2, 1)
-    year = now.year - 1966# if now.date() <= current_date else now.year - 1965
-    next_date = get_date(now.year, 2, 1) # if now.date() <= current_date else now.year + 1, 2, 1)
+    year = now.year - 1966 if now.date() <= current_date else now.year - 1965
+    next_date = get_date(now.year if now.date() <= current_date else now.year + 1, 2, 1)
     return next_date, roman.toRoman(year)
 
 
