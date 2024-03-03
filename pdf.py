@@ -52,9 +52,9 @@ def generate_pdf(people, boxes, title):
 
     initial_y_position = 145
     y_position = initial_y_position
-    x_position = 50
+    x_position = 10
     column_threshold = 0
-    column_width = 200
+    column_width = 205
 
     c.setFont("Times-Roman", 10)
 
