@@ -13,19 +13,74 @@ LABEL_GRID_OFFSET = -20
 PAGE_HEIGHT = letter[1]
 CENTER_X = letter[0] // 2
 TITLE_Y = PAGE_HEIGHT - 25
-GRID_Y = TITLE_Y - 735
+GRID_Y = TITLE_Y - 715
 PDF_PATH = "boxes.pdf"
 
 
-def draw_grid(c, boxes):
+def draw_grid(c, boxes, teams_scores):
+    c.setFont("Times-Roman", 8)
+
+    team1, team2 = teams_scores[0] if teams_scores else ("Away", "Home")
+
+    c.setFont("Times-Roman", 14)
+    team1_width = c.stringWidth(team1, "Times-Roman", 14)
+    team1_x = CENTER_X - team1_width / 2
+    c.drawString(CENTER_X - c.stringWidth(team1, "Times-Roman", 14) / 2,
+                 PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20), team1)
+    c.line(team1_x, PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20) - 2,
+           team1_x + team1_width, PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20) - 2)
+
+    letter_height = 20
+    total_height = len(team2) * letter_height
+    offset = (BOXES_SIZE * CELL_SIZE - total_height) / 2
+
+    for i, team_name_letter in enumerate(team2):
+        c.drawString(10,
+                     PAGE_HEIGHT - (GRID_Y + offset + i * letter_height + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2),
+                     team_name_letter)
+
+    line_start_y = PAGE_HEIGHT - (GRID_Y + offset + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2) + 10
+    line_end_y = line_start_y - total_height + 5
+    c.line(22, line_start_y, 22, line_end_y)
+
     c.setFont("Times-Roman", 8)
     for i in range(BOXES_SIZE):
-        c.drawString(10, PAGE_HEIGHT - (GRID_Y + i * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2), str(i))
+        c.drawString(30, PAGE_HEIGHT - (GRID_Y + i * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2), str(i))
 
     for j in range(BOXES_SIZE):
         c.drawString(j * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2,
                      PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET),
                      str(j))
+
+    scores = teams_scores[1]
+    if scores:
+        winning_quarters = {}
+        for quarter in range(len(scores[0])):
+            team1_ones = scores[0][quarter] % 10
+            team2_ones = scores[1][quarter] % 10
+
+            winning_box = (team1_ones, team2_ones)
+            if winning_box not in winning_quarters:
+                winning_quarters[winning_box] = []
+            winning_quarters[winning_box].append(quarter)
+
+            c.setFillGray(0.75)
+            c.rect(team1_ones * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET,
+                   PAGE_HEIGHT - (GRID_Y + team2_ones * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE),
+                   CELL_SIZE, CELL_SIZE, fill=1)
+            c.setFillGray(0)
+
+        for i in range(BOXES_SIZE):
+            for j in range(BOXES_SIZE):
+                c.rect(j * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET,
+                       PAGE_HEIGHT - (GRID_Y + i * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE),
+                       CELL_SIZE, CELL_SIZE)
+                if (j, i) in winning_quarters:
+                    quarters = ', '.join(
+                        map(str, [quarter + 1 for quarter in winning_quarters[(j, i)]]))
+                    c.drawString(j * CELL_SIZE + LABEL_OFFSET + GRID_OFFSET + 5,
+                                 PAGE_HEIGHT - (GRID_Y + i * CELL_SIZE + CELL_SIZE - 10 + LABEL_OFFSET + GRID_OFFSET),
+                                 quarters)
 
     for i in range(BOXES_SIZE):
         for j in range(BOXES_SIZE):
@@ -39,7 +94,7 @@ def draw_grid(c, boxes):
                              text[k])
 
 
-def generate_pdf(people, boxes, title):
+def generate_pdf(people, boxes, title, teams_scores):
     c = canvas.Canvas(os.path.join(PDF_PATH), pagesize=letter)
     c.setFont("Times-Roman", 14)
     c.setTitle(title)
@@ -48,9 +103,9 @@ def generate_pdf(people, boxes, title):
     title_x = CENTER_X - title_width / 2
     c.drawString(title_x, TITLE_Y, title)
 
-    draw_grid(c, boxes)
+    draw_grid(c, boxes, teams_scores)
 
-    initial_y_position = 145
+    initial_y_position = 135
     y_position = initial_y_position
     x_position = 10
     column_threshold = 0
