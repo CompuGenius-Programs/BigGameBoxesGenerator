@@ -20,21 +20,21 @@ PDF_PATH = "boxes.pdf"
 def draw_grid(c, boxes, teams_scores):
     c.setFont("Times-Roman", 8)
 
-    team1, team2 = teams_scores[0] if teams_scores else ("Away", "Home")
+    teams = teams_scores[0] if teams_scores[0] else ["Away", "Home"]
 
     c.setFont("Times-Roman", 14)
-    team1_width = c.stringWidth(team1, "Times-Roman", 14)
+    team1_width = c.stringWidth(teams[0], "Times-Roman", 14)
     team1_x = CENTER_X - team1_width / 2
-    c.drawString(CENTER_X - c.stringWidth(team1, "Times-Roman", 14) / 2,
-                 PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20), team1)
+    c.drawString(CENTER_X - c.stringWidth(teams[0], "Times-Roman", 14) / 2,
+                 PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20), teams[0])
     c.line(team1_x, PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20) - 2,
            team1_x + team1_width, PAGE_HEIGHT - (GRID_Y + LABEL_OFFSET + GRID_OFFSET + LABEL_GRID_OFFSET - 20) - 2)
 
     letter_height = 20
-    total_height = len(team2) * letter_height
+    total_height = len(teams[1]) * letter_height
     offset = (BOXES_SIZE * CELL_SIZE - total_height) / 2
 
-    for i, team_name_letter in enumerate(team2):
+    for i, team_name_letter in enumerate(teams[1]):
         c.drawString(10,
                      PAGE_HEIGHT - (GRID_Y + offset + i * letter_height + LABEL_OFFSET + GRID_OFFSET + CELL_SIZE // 2),
                      team_name_letter)
