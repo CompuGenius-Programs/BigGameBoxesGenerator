@@ -1,3 +1,4 @@
 ttkthemes
 roman
 reportlab
+requests

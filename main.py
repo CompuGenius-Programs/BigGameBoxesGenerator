@@ -7,6 +7,8 @@ import roman
 from gui import app
 from pdf import generate_pdf
 
+import scores
+
 BOXES_SIZE = 10
 SPOTS = 100
 
@@ -53,6 +55,10 @@ def main():
 
     date, roman_year = get_date_and_number()
     title = f"Big Game {roman_year} Boxes - {date.strftime('%A, %B %d, %Y')}"
+
+    quarter_scores = scores.get_scores(date.strftime("%Y%m%d"))
+    print(quarter_scores)
+
     generate_pdf(people, boxes, title)
 
 
